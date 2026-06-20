@@ -1,0 +1,86 @@
+[package]
+name = "boards"
+edition = "2021"
+version.workspace = true
+
+[dependencies]
+apdu-dispatch = "0.4"
+apps = { path = "../apps", features = ["fido-authenticator"] }
+cortex-m = "0.7"
+cortex-m-rtic = "1.0"
+cortex-m-rt = "0.7.5"
+ctaphid-dispatch = "0.4"
+delog = "0.1"
+embedded-hal = "0.2.3"
+embedded-time = "0.12"
+generic-array = "0.14"
+interchange = "0.3"
+littlefs2 = { version = "=0.7.0", features = ["c-stubs", "unstable-littlefs-patched"] }
+littlefs2-sys = "=0.3.2"
+memory-regions = { path = "../memory-regions" }
+nb = "1"
+nfc-device = { path = "../nfc-device" }
+rand = { version =  "0.8.5", default-features = false }
+rand_chacha = { version = "0.3.1", default-features = false }
+ref-swap = "0.1.0"
+spi-memory = "0.2.0"
+trussed = { version = "0.1", default-features = false }
+usb-device = "0.2"
+usbd-ccid = "0.4"
+usbd-ctaphid = "0.4"
+utils = { path = "../utils" }
+
+# soc-lpc55
+lpc55-hal = { version = "0.5", optional = true }
+lpc55-pac = { version = "0.5", optional = true }
+systick-monotonic = { version = "1.0.0", optional = true }
+
+# soc-nrf52
+embedded-storage = { version = "0.3", optional = true }
+nrf52840-hal = { version = "0.15.1", optional = true }
+nrf52840-pac = { version = "0.11", optional = true }
+
+# board-nk3am
+lfs-backup = { path = "../lfs-backup", optional = true }
+
+# board-nk3xn
+fm11nc08 = { path = "../fm11nc08", optional = true }
+
+# logging
+cortex-m-semihosting = { version = "0.3.5", optional = true }
+rtt-target = { version = "0.3", features = ["cortex-m"], optional = true }
+
+# se050
+se05x = { version = "0.4", optional = true }
+
+trussed-manage = "0.3.0"
+
+[dev-dependencies]
+littlefs2-core = { version = "0.1", features = ["debug-error"] }
+
+[features]
+board-nk3am = ["soc-nrf52", "lfs-backup", "se05x/embedded-hal-v0.2.7"]
+board-nk3xn = ["soc-lpc55", "fm11nc08", "utils/storage", "se05x/embedded-hal-v0.2.7"]
+board-nkpk = ["board-nk3am", "utils/storage"]
+
+soc-lpc55 = ["lpc55-hal", "lpc55-pac", "se05x?/lpc55-v0.5", "systick-monotonic"]
+soc-nrf52 = ["embedded-storage", "nrf52840-hal", "nrf52840-pac", "se05x?/nrf"]
+
+log-all = []
+log-trace = []
+log-debug = []
+log-info = []
+log-warn = []
+log-error = []
+log-none = []
+
+log-rtt = ["rtt-target"]
+log-semihosting = ["cortex-m-semihosting"]
+
+no-buttons = []
+no-delog = []
+no-encrypted-storage = ["lpc55-hal?/littlefs"]
+format-filesystem = []
+provisioner = ["apps/provisioner-app"]
+se050 = ["se05x", "apps/se050"]
+trussed-auth = ["apps/backend-auth"]

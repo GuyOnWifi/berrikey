@@ -1,0 +1,7 @@
+signing-key
+bootloader.hex
+mbr.hex
+build
+.built
+nrf-toolchain
+config/nk_sdk_config.h

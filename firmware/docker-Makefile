@@ -1,0 +1,15 @@
+TAG := registry.git.nitrokey.com/nitrokey/nitrokey-3-firmware/nitrokey3
+RUNNER ?= runners/embedded
+DOCKER ?= docker
+
+.PHONY: push
+push:
+	docker push $(TAG)
+
+.PHONY: build
+build:
+	docker build . --tag $(TAG)
+
+.PHONY: docker-build
+docker-build:
+	docker run --interactive --rm --volume $(PWD):/app $(TAG) make -C $(RUNNER)

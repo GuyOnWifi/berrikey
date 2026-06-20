@@ -1,0 +1,117 @@
+[package]
+name = "embedded-runner-lib"
+version = { workspace = true }
+authors = [
+	"Jan Nordholz <j.nordholz@tu-berlin.de",
+	"Markus Meissner <meissner@nitrokey.com>"
+]
+edition = "2021"
+license = "MIT"
+
+[dependencies]
+### base dependencies
+apps = { path = "../../components/apps", features = ["nk3"] }
+boards = { path = "../../components/boards", features = ["trussed-auth"] }
+delog = "0.1"
+cortex-m = { version = "0.7", features = ["critical-section-single-core"]}
+cortex-m-rt = "0.7.5"
+cortex-m-rtic = "1.0"
+embedded-hal = "0.2.3"
+littlefs2-core = "0.1"
+nfc-device = { path = "../../components/nfc-device" }
+utils = { path = "../../components/utils", features = ["storage"] }
+se05x = { version = "0.4", optional = true }
+
+### protocols and dispatchers
+apdu-dispatch = "0.4"
+
+### trussed core
+trussed = { version = "0.1", default-features = false }
+interchange = "0.3"
+
+### usb machinery
+usb-device = "0.2"
+
+### NRF52 specific dependencies
+nrf52840-hal = { version = "0.15.1", optional = true }
+nrf52840-pac = { version = "0.11", optional = true }
+
+### LPC55 specific dependencies
+lpc55-hal = { version = "0.5", optional = true }
+lpc55-pac = { version = "0.5", optional = true }
+nb = { version = "1", optional = true }
+systick-monotonic = { version = "1.0.0", optional = true }
+
+### Allocator
+embedded-alloc = { version = "0.6.0", optional = true }
+
+# littlefs2-sys for intrinsics feature
+littlefs2-sys = { version = "0.3", optional = true }
+
+[build-dependencies]
+memory-regions = "1"
+serde = { version = "1", features = ["derive"] }
+utils = { path = "../../components/utils", features = ["build"] }
+
+[features]
+default = ["alloc"]
+
+test = ["apps/nk3-test", "utils/test"]
+develop = ["no-encrypted-storage", "apps/no-reset-time-window", "log-traceP"]
+develop-no-press = ["develop", "no-buttons"]
+provisioner = ["apps/nk3-provisioner", "boards/provisioner", "write-undefined-flash", "no-buttons", "apps/no-reset-time-window", "lpc55-hardware-checks"]
+
+no-delog = ["boards/no-delog", "delog/knock-it-off"]
+
+# Disable littlefs use of compiler intrinsics
+littlefs-software-intrinsics = ["littlefs2-sys/software-intrinsics"]
+
+# Do not use encryption for the filesystem
+no-encrypted-storage = ["boards/no-encrypted-storage"]
+
+# Check for undefined flash and write to determined value (for prince provisioning)
+write-undefined-flash = []
+
+# Use to auto-succeed every user presence check
+no-buttons = ["boards/no-buttons"]
+
+# Format filesystem anyway
+format-filesystem = ["boards/format-filesystem"]
+
+alloc = ["embedded-alloc"]
+
+board-nk3am = ["boards/board-nk3am", "soc-nrf52", "se050"]
+board-nk3xn = ["boards/board-nk3xn", "soc-lpc55", "se050"]
+
+soc-nrf52 = ["nrf52840-hal", "nrf52840-pac"]
+soc-lpc55 = ["lpc55-hal", "lpc55-pac", "nb", "systick-monotonic"]
+
+se050 = ["apps/se050", "boards/se050", "dep:se05x"]
+
+lpc55-hardware-checks = []
+
+log-all = ["boards/log-all"]
+log-trace = []
+log-debug = []
+log-info = []
+log-warn = []
+log-error = ["boards/log-error"]
+log-none = []
+
+log-traceP = [ "log-trace", "log-debug", "log-info", "log-warn", "log-error" ]
+log-debugP = [ "log-debug", "log-info", "log-warn", "log-error" ]
+log-infoP = [ "log-info", "log-warn", "log-error" ]
+log-warnP = [ "log-warn", "log-error" ]
+
+log-rtt = ["boards/log-rtt"]
+log-semihosting = ["boards/log-semihosting"]
+
+[[bin]]
+name = "nrf52_runner"
+path = "src/bin/app-nrf.rs"
+required-features = ["soc-nrf52"]
+
+[[bin]]
+name = "lpc55_runner"
+path = "src/bin/app-lpc.rs"
+required-features = ["soc-lpc55"]

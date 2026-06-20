@@ -1,0 +1,27 @@
+Id,Designator,Footprint,Quantity,Designation,JLCPCB ,JLCPCB Link,"Digikey Links (unused for JLCPCB assembly, but in case you wanted to build yourself)"
+1,"C1, C2",C_0603_1608Metric,2,12pF,Basic Auto Match,N/A,https://www.digikey.ca/en/products/detail/yageo/CC0603JRNPO9BN120/302793
+2,"C3, C6, C13",C_0603_1608Metric,3,4.7uF,Basic Auto Match,N/A,https://www.digikey.ca/en/products/detail/yageo/CC0603KRX5R7BB475/5195193
+3,"C4, C9, C11, C12",C_0603_1608Metric,4,100nF,Basic Auto Match,N/A,https://www.digikey.ca/en/products/detail/yageo/CC0603KRX7R9BB104/2103082
+4,"C5, C10",C_0603_1608Metric,2,1uF,Basic Auto Match,N/A,https://www.digikey.ca/en/products/detail/yageo/CC0603KRX5R9BB105/5195195
+5,C7,C_0603_1608Metric,1,100pF,Basic Auto Match,N/A,https://www.digikey.ca/en/products/detail/yageo/CC0603JRNPO9BN101/302803
+6,C8,C_0603_1608Metric,1,820pF,Basic Auto Match,N/A,https://www.digikey.ca/en/products/detail/yageo/CC0603JRNPO9BN821/5195184
+7,D1,LED_RGB_1210,1,LED_KRGB,FM-B2020RGBA-HG,https://jlcpcb.com/partdetail/110013-FM_B2020RGBAHG/C108793,https://www.lcsc.com/product-detail/C108793.html
+8,J1,USB_A_Molex_48037-2200_Horizontal,1,USB_A,48037-2200,https://jlcpcb.com/partdetail/MOLEX-480372200/C2765195,https://www.digikey.ca/en/products/detail/molex/0480372200/2421361
+9,P1,GCT_USB4155-03-C_REVA,1,USB_C_Plug_USB2.0,USB4155-03-C,https://jlcpcb.com/partdetail/5847867-USB4155_03C/C5183853,https://www.digikey.ca/en/products/detail/gct/USB4155-03-C/14305161
+10,"R1, R6",R_0603_1608Metric,2,4.7k,Basic Auto Match,N/A,https://www.digikey.ca/en/products/detail/yageo/RC0603FR-074K7L/727212
+11,R2,R_0603_1608Metric,1,180R,Basic Auto Match,N/A,https://www.digikey.ca/en/products/detail/yageo/RC0603FR-07180RL/726994
+12,R3,R_0603_1608Metric,1,5.1k,Basic Auto Match,N/A,https://www.digikey.ca/en/products/detail/yageo/RC0603FR-075K1L/727268
+13,"R4, R5",R_0603_1608Metric,2,10k,Basic Auto Match,N/A,https://www.digikey.ca/en/products/detail/yageo/RC0603FR-0710KL/726880
+14,R7,R_0603_1608Metric,1,1M,Basic Auto Match,N/A,https://www.digikey.ca/en/products/detail/yageo/RC0603FR-071ML/726844
+15,R8,R_0603_1608Metric,1,50R,Basic Auto Match,N/A,https://www.digikey.ca/en/products/detail/yageo/RC0603FR-0749R9L/730211
+16,TP1,Strawberry_Cap_Touch,1,Touch,N/A,N/A,N/A
+17,TP3,TestPoint_Pad_D2.0mm,1,RST,N/A,N/A,N/A
+18,TP4,TestPoint_Pad_D2.0mm,1,SWDCLK,N/A,N/A,N/A
+19,TP5,TestPoint_Pad_D2.0mm,1,SWDIO,N/A,N/A,N/A
+20,TP6,TestPoint_Pad_D2.0mm,1,VCC,N/A,N/A,N/A
+21,TP7,TestPoint_Pad_D2.0mm,1,GND,N/A,N/A,N/A
+22,U1,Nordic_AQFN-73-1EP_7x7mm_P0.5mm,1,nRF52840,NRF52840-QIAA-R,https://jlcpcb.com/partdetail/NordicSemicon-NRF52840_QIAAR/C190794,https://www.digikey.ca/en/products/detail/nordic-semiconductor-asa/NRF52840-QIAA-R/7725407
+23,U2,QFN20_SE050_NXP,1,SE050B2HQ1/Z01SFZ,SE050C1HQ1/Z01SCZ,https://jlcpcb.com/partdetail/NXPSemicon-SE050C1HQ1Z01SCZ/C2650415,https://www.digikey.ca/en/products/detail/nxp-usa-inc/SE050C1HQ1-Z01SCZ/10271723
+24,U3,WSON-8-1EP_8x6mm_P1.27mm_EP3.4x4.3mm,1,GD25QxxxEY,GD25Q16CSIGR,https://jlcpcb.com/partdetail/376201-GD25Q16CSIGR/C395505,https://www.digikey.ca/en/products/detail/gigadevice-semiconductor-hk-limited/GD25Q16CSIGR/9484689
+25,U4,DRY6,1,TPD4S012DRYR,TPD4S012DRYR,https://jlcpcb.com/partdetail/TexasInstruments-TPD4S012DRYR/C96506,https://www.digikey.ca/en/products/detail/texas-instruments/TPD4S012DRYR/2037539
+26,Y1,Crystal_SMD_3225-4Pin_3.2x2.5mm,1,32MHz,Q22FA12800025,https://jlcpcb.com/partdetail/SeikoEpson-Q22FA12800025/C187794,https://www.digikey.ca/en/products/detail/txc-corporation/7V-32-000MAAE-T/2626986

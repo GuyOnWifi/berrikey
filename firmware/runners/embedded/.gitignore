@@ -1,0 +1,9 @@
+/deny.log
+/build*.err.log
+/lpc-runner*
+/nrf-runner*
+/symbols*.txt
+custom_memory.x
+/fidokeys_lfs*.ihex
+/artifacts
+/cfg.toml

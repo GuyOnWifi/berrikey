@@ -1,0 +1,299 @@
+
+include:
+  - project: 'nitrokey/gitlab-ci'
+    file:
+      - 'common-jobs/common_jobs.yml'
+      - 'common-jobs/github_commands.yml'
+
+stages:
+  - pull-github
+  - build
+  - metrics
+  - test
+  - deploy
+  - commands
+
+variables:
+  GIT_STRATEGY: clone             
+  GIT_DEPTH: 0                    
+  GIT_SUBMODULE_STRATEGY: recursive 
+  SCRIPTS_REPO: git@git.nitrokey.com:nitrokey/gitlab-ci.git
+  REPO_GROUP: nitrokey
+  REPO_NAME: nitrokey-3-firmware
+  MAIN_BRANCH: main 
+  IMAGE_NAME: nitrokey3
+  COMMON_UPDATE_DOCKER: "false"
+  COMMON_UPLOAD_FILES: "false"
+  COMMON_UPLOAD_NIGHTLY: "false"
+  COMMAND_MERGE_ENABLED: "true"
+  LC_ALL: C.UTF-8
+  LANG: C.UTF-8
+
+
+# build stage
+
+metadata:
+  image: registry.git.nitrokey.com/nitrokey/nitrokey-3-firmware/nitrokey3:latest
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+  tags:
+    - docker
+  stage: build
+  script:
+    - make commands.bd
+    - make license.txt
+    - make manifest.json
+  after_script:
+    - mkdir -p artifacts
+    - cp commands.bd license.txt manifest.json artifacts || true
+    - git archive --format zip --output artifacts/nitrokey-3-firmware.zip --prefix nitrokey-3-firmware/ HEAD
+    - !reference [notify_github, script] # use notify_github from include
+  artifacts:
+    paths:
+      - artifacts
+
+check-usbip:
+  image: registry.git.nitrokey.com/nitrokey/nitrokey-3-firmware/nitrokey3:latest
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+  tags:
+    - docker
+  stage: build
+  script:
+    - cargo check --manifest-path runners/usbip/Cargo.toml
+    - cargo check --manifest-path runners/usbip/Cargo.toml --features provisioner
+    - cargo check --manifest-path runners/usbip/Cargo.toml --features test
+
+check-components:
+  image: registry.git.nitrokey.com/nitrokey/nitrokey-3-firmware/nitrokey3:latest
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+  tags:
+    - docker
+  stage: build
+  script:
+    - make check-components
+
+lint:
+  image: registry.git.nitrokey.com/nitrokey/nitrokey-3-firmware/nitrokey3:latest
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+    - if: '$CI_PIPELINE_SOURCE == "pipeline" && $COMMAND_BOT == "nitrokey-ci" && $COMMAND == "full-test"'
+  tags:
+    - docker
+  stage: build
+  script:
+    - make lint
+
+build-nightly:
+  image: registry.git.nitrokey.com/nitrokey/nitrokey-3-firmware/nitrokey3:latest
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+  tags:
+    - docker
+  stage: build
+  parallel:
+    matrix:
+      - RUSTUP_TOOLCHAIN: [stable, nightly]
+  script:
+    - rustup target add thumbv7em-none-eabihf thumbv8m.main-none-eabi
+    - cargo --version
+    - make -C runners/embedded build-nk3am.bl
+    - make -C runners/embedded build-nk3am.bl FEATURES=test
+    - make -C runners/embedded build-nk3am.bl FEATURES=provisioner
+    - make -C runners/embedded build-nk3xn
+    - make -C runners/embedded build-nk3xn FEATURES=test
+    - make -C runners/embedded build-nk3xn FEATURES=provisioner
+    - cargo build --release --manifest-path runners/usbip/Cargo.toml
+    - cargo build --release --manifest-path runners/usbip/Cargo.toml --features test
+    - cargo build --release --manifest-path runners/usbip/Cargo.toml --features provisioner
+
+build-release-firmware:
+  image: registry.git.nitrokey.com/nitrokey/nitrokey-3-firmware/nitrokey3:latest
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+  tags:
+    - docker
+  stage: build
+  script:
+    - git describe --exact-match
+    - export VERSION=`git describe --exact-match`
+    - if echo $VERSION | grep test ; then export FEATURES=test ; fi
+    - mkdir -p artifacts
+    - make -C runners/embedded build-nk3am.bl
+    - cp runners/embedded/artifacts/runner-nrf52-bootloader-nk3am.bin.ihex artifacts/firmware-nk3am-nrf52-$VERSION.ihex
+    - make -C runners/embedded build-nk3am.bl FEATURES=provisioner
+    - cp runners/embedded/artifacts/runner-nrf52-bootloader-nk3am.bin.ihex artifacts/provisioner-nk3am-nrf52-$VERSION.ihex
+    - make -C runners/embedded build-nk3xn
+    - cp runners/embedded/artifacts/runner-lpc55-nk3xn.bin artifacts/firmware-nk3xn-lpc55-$VERSION.bin
+    - make -C runners/embedded build-nk3xn FEATURES=provisioner
+    - cp runners/embedded/artifacts/runner-lpc55-nk3xn.bin artifacts/provisioner-nk3xn-lpc55-$VERSION.bin
+  artifacts:
+    paths:
+      - artifacts
+
+build-usbip:
+  image: registry.git.nitrokey.com/nitrokey/nitrokey-3-firmware/nitrokey3:latest
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+  tags:
+    - docker
+  stage: build
+  script:
+    - export VERSION=`git describe`
+    - if echo $VERSION | grep test ; then export FEATURES=test ; fi
+    - mkdir -p artifacts
+    - cargo build --release --manifest-path runners/usbip/Cargo.toml --features $FEATURES,
+    - cp target/release/usbip-runner artifacts/usbip-runner-$VERSION
+    - cargo build --release --manifest-path runners/usbip/Cargo.toml --features provisioner
+    - cp target/release/usbip-runner artifacts/usbip-provisioner-$VERSION
+  artifacts:
+    paths:
+      - artifacts
+
+build-firmware:
+  image: registry.git.nitrokey.com/nitrokey/nitrokey-3-firmware/nitrokey3:latest
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+    - if: '$CI_PIPELINE_SOURCE == "pipeline" && $COMMAND_BOT == "nitrokey-ci" && $COMMAND == "full-test"'
+  tags:
+    - docker
+  stage: build
+  script:
+    # Ensure that the lockfile is up-to-date
+    - cargo fetch --locked
+    # Generate normal binaries
+    - make binaries
+    # Generate no-buttons firmware binaries for HIL
+    - mkdir -p artifacts
+    - make -C runners/embedded build-nk3xn FEATURES=no-buttons
+    - cp runners/embedded/artifacts/runner-lpc55-nk3xn.bin artifacts/firmware-lpc55.bin
+    - make -C runners/embedded build-nk3xn FEATURES=provisioner,no-buttons
+    - cp runners/embedded/artifacts/runner-lpc55-nk3xn.bin artifacts/provisioner-lpc55.bin
+    - make -C runners/embedded build-nk3am.bl FEATURES=no-buttons
+    - cp runners/embedded/artifacts/runner-nrf52-bootloader-nk3am.bin.ihex artifacts/firmware-nrf52.hex
+    - make -C runners/embedded build-nk3am.bl FEATURES=provisioner,no-buttons
+    - cp runners/embedded/artifacts/runner-nrf52-bootloader-nk3am.bin.ihex artifacts/provisioner-nrf52.hex
+    - make -C runners/nkpk build FEATURES=no-buttons
+    - cp runners/nkpk/artifacts/runner-nkpk.bin.ihex artifacts/firmware-nkpk.hex
+    - make -C runners/nkpk build FEATURES=provisioner,no-buttons
+    - cp runners/nkpk/artifacts/runner-nkpk.bin.ihex artifacts/provisioner-nkpk.hex
+  artifacts:
+    paths:
+      - artifacts
+      - binaries
+
+# metrics stage
+
+metrics:
+  image: registry.git.nitrokey.com/nitrokey/nitrokey-3-firmware/nitrokey3:latest
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+  tags:
+    - docker
+  stage: metrics
+  allow_failure: true
+  script:
+    - repometrics generate --cache > metrics.toml
+    - if [ -n "$CI_COMMIT_BRANCH" ] && [ "$CI_COMMIT_BRANCH" != "main" ] ; then
+          repometrics run --base origin/main --output-format markdown | tee --append metrics-comment.md ;
+          nitrokey-ci write-comment --owner Nitrokey --repo nitrokey-3-firmware --id repometrics --commit $(git rev-parse HEAD) metrics-comment.md ;
+      fi
+  artifacts:
+    paths:
+      - metrics.toml
+    expire_in: never
+
+###############################################################################
+# test stage
+
+software-tests:
+  image: registry.git.nitrokey.com/nitrokey/nitrokey-3-firmware/nitrokey3:latest
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+  tags:
+    - docker
+  stage: test
+  script:
+    - make software-tests
+
+hardware-tests:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+  tags:
+    - nk3-hw
+  parallel:
+    matrix:
+      - MODEL: [ nrf52, lpc55, nkpk ]
+  stage: test
+  script:
+    - git clone https://github.com/Nitrokey/nitrokey-hardware-test.git --recursive --branch v1.3.4
+    - make -C nitrokey-hardware-test ci FW=../artifacts MODEL=$MODEL TESTS=pynitrokey,nk3test
+  after_script:
+    - cp nitrokey-hardware-test/artifacts/Nitrokey3TestSuite/report-junit.xml nitrokey-hardware-test/artifacts/report-junit.xml || true
+    - !reference [notify_github, script] # use notify_github from include
+  artifacts:
+    when: always
+    paths:
+      - nitrokey-hardware-test/artifacts
+    reports:
+      junit: nitrokey-hardware-test/artifacts/report-junit.xml
+
+full-hardware-tests:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "pipeline" && $COMMAND_BOT == "nitrokey-ci" && $COMMAND == "full-test"'
+  tags:
+    - nk3-hw
+  parallel:
+    matrix:
+      - MODEL: [ nrf52, lpc55, nkpk ]
+  stage: test
+  script:
+    - git clone https://github.com/Nitrokey/nitrokey-hardware-test.git --recursive --branch v1.3.4
+    - >
+      if [ "$COMMAND_ARGS" == "slow" ] ; then
+        make -C nitrokey-hardware-test ci FW=../artifacts MODEL=$MODEL TESTS=pynitrokey,slow
+      else
+        make -C nitrokey-hardware-test ci FW=../artifacts MODEL=$MODEL TESTS=pynitrokey,full
+      fi
+  after_script:
+    - cp nitrokey-hardware-test/artifacts/FullTestSuite/report-junit-full.xml nitrokey-hardware-test/artifacts/ || true
+    - cp nitrokey-hardware-test/artifacts/SlowTestSuite/report-junit-slow.xml nitrokey-hardware-test/artifacts/ || true
+    - >
+      if [ "$CI_JOB_STATUS" != "success" ]; then
+        echo "FULL_TEST_STATUS=failed" >> build.env
+      fi
+    - !reference [notify_github, script] # use notify_github from include
+  artifacts:
+    when: always
+    paths:
+      - nitrokey-hardware-test/artifacts
+    reports:
+      junit: nitrokey-hardware-test/artifacts/report-junit*.xml
+      dotenv: build.env
+
+# commands stage
+
+full-hardware-tests-report:
+  image: registry.git.nitrokey.com/nitrokey/nitrokey-3-firmware/nitrokey3:latest
+  rules:
+     - if: '$CI_PIPELINE_SOURCE == "pipeline" && $COMMAND_BOT == "nitrokey-ci" && $COMMAND == "full-test"'
+  when: always
+  tags:
+    - docker
+  stage: commands
+  before_script: []
+  after_script: []
+  script:
+    - >
+      if [ "$FULL_TEST_STATUS" == "failed" ]; then
+        echo Full hardware tests completed with errors: > report.txt
+      else
+        echo Full hardware tests completed successfully: > report.txt
+      fi
+    - echo https://${CI_SERVER_HOST}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/-/pipelines/${CI_PIPELINE_ID}/test_report >> report.txt
+    - nitrokey-ci write-comment --owner Nitrokey --repo nitrokey-3-firmware --id ${CI_JOB_NAME}_${COMMENT_ID} --commit $(git rev-parse HEAD) report.txt
+

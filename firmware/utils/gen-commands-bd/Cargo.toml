@@ -1,0 +1,11 @@
+[package]
+name = "gen-commands-bd"
+version = "0.1.0"
+edition = "2021"
+authors = ["Robin Krahl <robin@nitrokey.com>"]
+license = "Apache-2.0 or MIT"
+
+[dependencies]
+cargo_metadata = "0.18.1"
+memory-regions = "1"
+utils = { path = "../../components/utils", default-features = false }
