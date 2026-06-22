@@ -1,8 +1,8 @@
-![Logo](./images/Strawberry.svg)
+<p align="center">
+  <img src="./images/Strawberry.svg" alt="Logo" width="100">
+</p>
 
-# BerriKey
-
----
+<h1 align="center">BerriKey</h1>
 
 **A strawberry-themed, hardware key backed by a tamper-proof Secure Element. Built on top of the FIDO2 protocol. Simply plug it in to any site or app that supports the protocol and register a secure authenticator**
 
@@ -55,6 +55,7 @@ Credit goes to the [Nitrokey Team](https://github.com/Nitrokey/nitrokey-3-firmwa
 5 SWD pads have been exposed on the PCB. Wire them to a CMSIS-DAP debugger (I tested using the RPI debuprobe). Go into `firmware/utils/nrf-builder` and run `make full-deploy`. This will flash the bootloader, provision the keys and certificates, and then flash the firmware.
 
 ## Zine
+
 ![Zine](./images/Zine.png)
 
 Check it out [here](./zine.pdf)!
