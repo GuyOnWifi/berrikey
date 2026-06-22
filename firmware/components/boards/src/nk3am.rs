@@ -151,9 +151,9 @@ pub fn init_pins(gpiote: GPIOTE, p0: P0, p1: P1) -> BoardGPIO {
     gpio_p0.p0_13.into_push_pull_output(Level::Low).degrade();
 
     /* RGB LED */
-    let led_r = gpio_p0.p0_26.into_push_pull_output(Level::Low).degrade();
-    let led_g = gpio_p0.p0_04.into_push_pull_output(Level::Low).degrade();
-    let led_b = gpio_p0.p0_06.into_push_pull_output(Level::Low).degrade();
+    let led_r = gpio_p0.p0_06.into_push_pull_output(Level::Low).degrade();
+    let led_g = gpio_p0.p0_26.into_push_pull_output(Level::Low).degrade();
+    let led_b = gpio_p0.p0_04.into_push_pull_output(Level::Low).degrade();
 
     /* SE050 */
     let se_pwr = gpio_p0.p0_08.into_push_pull_output(Level::Low).degrade();

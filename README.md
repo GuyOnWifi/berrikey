@@ -55,5 +55,6 @@ Credit goes to the [Nitrokey Team](https://github.com/Nitrokey/nitrokey-3-firmwa
 5 SWD pads have been exposed on the PCB. Wire them to a CMSIS-DAP debugger (I tested using the RPI debuprobe). Go into `firmware/utils/nrf-builder` and run `make full-deploy`. This will flash the bootloader, provision the keys and certificates, and then flash the firmware.
 
 ## Zine
+![Zine](./images/Zine.png)
 
 Check it out [here](./zine.pdf)!
