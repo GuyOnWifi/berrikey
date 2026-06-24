@@ -1,4 +1,4 @@
-Id,Designator,Footprint,Quantity,Designation,JLCPCB ,JLCPCB Link,Price (JLC),"Digikey Links (unused for JLCPCB assembly, but in case you wanted to build yourself)"
+Id,Designator,Footprint,Quantity,Designation,JLCPCB ,JLCPCB Link,Price (JLC),"Other Links (unused for JLCPCB assembly, but in case you wanted to build yourself)"
 1,"C1, C2",C_0603_1608Metric,2,12pF,Basic Auto Match,N/A,$0.01,https://www.digikey.ca/en/products/detail/yageo/CC0603JRNPO9BN120/302793
 2,"C3, C6, C13",C_0603_1608Metric,3,4.7uF,Basic Auto Match,N/A,$0.01,https://www.digikey.ca/en/products/detail/yageo/CC0603KRX5R7BB475/5195193
 3,"C4, C9, C11, C12",C_0603_1608Metric,4,100nF,Basic Auto Match,N/A,$0.01,https://www.digikey.ca/en/products/detail/yageo/CC0603KRX7R9BB104/2103082
@@ -25,4 +25,5 @@ Id,Designator,Footprint,Quantity,Designation,JLCPCB ,JLCPCB Link,Price (JLC),"Di
 24,U3,WSON-8-1EP_8x6mm_P1.27mm_EP3.4x4.3mm,1,GD25QxxxEY,GD25Q16CSIGR,https://jlcpcb.com/partdetail/376201-GD25Q16CSIGR/C395505,$1.09,https://www.digikey.ca/en/products/detail/gigadevice-semiconductor-hk-limited/GD25Q16CSIGR/9484689
 25,U4,DRY6,1,TPD4S012DRYR,TPD4S012DRYR,https://jlcpcb.com/partdetail/TexasInstruments-TPD4S012DRYR/C96506,$0.43,https://www.digikey.ca/en/products/detail/texas-instruments/TPD4S012DRYR/2037539
 26,Y1,Crystal_SMD_3225-4Pin_3.2x2.5mm,1,32MHz,Q22FA12800025,https://jlcpcb.com/partdetail/SeikoEpson-Q22FA12800025/C187794,$0.23,https://www.digikey.ca/en/products/detail/txc-corporation/7V-32-000MAAE-T/2626986
-Total,,,,,,,$17.02,
+27,Magnets,6mmx2mm,12,N/A,N/A,N/A,$2.20,https://www.amazon.ca/GOOZADA-Refrigerator-Magnets-Neodymium-Whiteboards/dp/B0F66HG8RN?dib=eyJ2IjoiMSJ9.egr9a-ndsBuzFyYwMbEclotBIx-EXNvKumm9d3X38Yy6XDw_9hov2r_V7mvs8WNOqz29F458VLOBU40a75bq7elrRkoinJULBCYGOF9MSthKjew18weklm3qTzGj5QT1d-gbE9XEhprJYjTU3MP1dt3G-ARk2PZN7qdYCfiQsMSV2w7TOtx9-cF3hI9243iMS-aAhKbJflRgX1913RE4PQkwlWyrBk-RiAasm4cs9py_9oGLUhoubEr3Wgd-SHXHPXQP1LXIZI2fCtrtD5GJvwcPZQmxv85rJtqS-iHLv1U.SSaCSGC8u3pCtVAOY9lQC1fBg8scrSms9NaDmcU-j5o&dib_tag=se&keywords=tiny+magnets&qid=1765805551&sr=8-5
+Total,,,,,,,$19.22,
